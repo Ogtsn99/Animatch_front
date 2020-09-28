@@ -1,6 +1,8 @@
-import React, { Component } from 'react'
-import TwitterLogin from 'react-twitter-auth'
+import React from 'react'
 import axios from 'axios'
+import Footer from "./Footer";
+import PersistentDrawer from "./conponents/PersistentDrawer";
+
 // eslint-disable-next-line
 let API_ROOT, CLIENT_ROOT
 if(process.env.NODE_ENV === "development"){
@@ -11,71 +13,39 @@ if(process.env.NODE_ENV === "development"){
   CLIENT_ROOT = "https://animatch-nyan.herokuapp.com"
 }
 
-class App extends Component {
-
-  constructor() {
-    super();
-    this.state = { isAuthenticated: false, user: null, token: ''};
-  }
-
-  componentDidMount() {
-    console.log(API_ROOT, CLIENT_ROOT)
-    if(localStorage.getItem('x-auth-token')) {
-      axios.get(API_ROOT + '/api/v1/auth/me', {
-        headers: {
-          'x-auth-token': localStorage.getItem('x-auth-token')
-        }
-      }).then(response => {
-        console.log(response)
-      })
-    }
-  }
-
-  onSuccess = (response) => {
-    const token = response.headers.get('x-auth-token');
-    console.log(token)
-    localStorage.setItem('x-auth-token', token);
-    response.json().then(user => {
-      if (token) {
-        this.setState({isAuthenticated: true, user: user, token: token});
+function authenticate(setIsAuthenticated, setUser) {
+  if (localStorage.getItem('x-auth-token')) {
+    axios.get(API_ROOT + '/api/v1/users/me', {
+      headers: {
+        'x-auth-token': localStorage.getItem('x-auth-token')
       }
-    });
-  };
-
-  onFailed = (error) => {
-    alert(error);
-  };
-
-  logout = () => {
-    this.setState({isAuthenticated: false, token: '', user: null})
-  };
-
-  render() {
-    let content = !!this.state.isAuthenticated ?
-      (
-        <div>
-          <p>Authenticated</p>
-          <div>
-            {this.state.user.email}
-          </div>
-          <div>
-            <button onClick={this.logout} className="button" >
-              Log out
-            </button>
-          </div>
-        </div>
-      ) :
-      (
-        <TwitterLogin loginUrl="https://animatch-nyan-api.herokuapp.com/api/v1/auth/twitter"
-                      onFailure={this.onFailed} onSuccess={this.onSuccess}
-                      requestTokenUrl="https://animatch-nyan-api.herokuapp.com/api/v1/auth/twitter/reverse"/>
-      );
-    return (
-      <div className="App">
-        {content}
-      </div>
-    );
+    }).then(response => {
+      if (process.env.NODE_ENV === "development")
+        console.log(response)
+      if (response.data.user) {
+        setUser(response.data.user)
+        setIsAuthenticated(true)
+      }
+    })
   }
+}
+
+function App(){
+  const [isAuthenticated, setIsAuthenticated] = React.useState(!!localStorage.getItem('x-auth-token'));
+  const [user, setUser] = React.useState(null)
+  React.useEffect(()=>authenticate(setIsAuthenticated, setUser), [isAuthenticated])
+  return (
+    <div>
+      <PersistentDrawer value={{
+        isAuthenticated: isAuthenticated,
+        setIsAuthenticated: setIsAuthenticated,
+        user: user,
+        setUser: setUser
+      }}/>
+      <Footer />
+    </div>
+  )
+
 }
 
 export default App;
