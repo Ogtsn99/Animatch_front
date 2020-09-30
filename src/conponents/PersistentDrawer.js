@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -15,11 +15,11 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
 import TwitterButton from "./TwitterButton";
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import Home from "./Home";
+import UserPage from "./UserPage";
+import SearchIcon from '@material-ui/icons/Search';
 import Users from "./Users";
 
 const drawerWidth = 240;
@@ -85,10 +85,8 @@ export default function PersistentDrawerLeft(props) {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-  const isAuthenticated = props.value.isAuthenticated
-  const setIsAuthenticated = props.value.setIsAuthenticated
-  const user = props.value.user
-  const setUser = props.value.setUser
+  let user = props.value.user
+  let setUser = props.value.setUser
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -100,105 +98,98 @@ export default function PersistentDrawerLeft(props) {
 
   function logout(){
     setUser(null)
-    setIsAuthenticated(false)
     localStorage.removeItem('x-auth-token')
   }
 
-  let twitterLoginOrLogout = !!isAuthenticated ?
-    (
-      <ListItem button key={"ログアウト"} onClick={logout}>
-        <ListItemText primary={"ログアウト"} />
-      </ListItem>
-    ) :
-    (
-      <ListItem>
-        <TwitterButton value={{
-          user: user,
-          isAuthenticated: isAuthenticated,
-          setIsAuthenticated: setIsAuthenticated,
-          setUser: setUser
-        }}/>
-      </ListItem>
-    );
+  let twitterLoginButton = (
+    <ListItem>
+      <TwitterButton value={{
+        user: user,
+        setUser: setUser
+      }}/>
+    </ListItem>
+  )
+
+  let LogoutButton = (
+    <ListItem button key={"ログアウト"} onClick={logout}>
+      <ListItemText primary={"ログアウト"} />
+    </ListItem>
+  )
 
   return (
-    <div className={classes.root}>
-      <CssBaseline />
-      <AppBar
-        position="fixed" color="secondary"
-        className={clsx(classes.appBar, {
-          [classes.appBarShift]: open,
-        })}
-      >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            className={clsx(classes.menuButton, open && classes.hide)}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap>
-            AniProf
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <Drawer
-        className={classes.drawer}
-        variant="persistent"
-        anchor="left"
-        open={open}
-        classes={{
-          paper: classes.drawerPaper,
-        }}
-      >
-        <div className={classes.drawerHeader}>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-          </IconButton>
-        </div>
-        <Divider />
-        <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
+    <Router>
+      <div className={classes.root}>
+        <CssBaseline />
+        <AppBar
+          position="fixed" color="secondary"
+          className={clsx(classes.appBar, {
+            [classes.appBarShift]: open,
+          })}
+        >
+          <Toolbar>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              edge="start"
+              className={clsx(classes.menuButton, open && classes.hide)}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h5" noWrap component={Link} to={"/"}
+                        style={{textDecoration: 'none', color: 'initial'}}>
+              Animatch
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <Drawer
+          className={classes.drawer}
+          variant="persistent"
+          anchor="left"
+          open={open}
+          classes={{
+            paper: classes.drawerPaper,
+          }}
+        >
+          <div className={classes.drawerHeader}>
+            <IconButton onClick={handleDrawerClose}>
+              {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+            </IconButton>
+          </div>
+          <Divider />
+          <List>
+            <ListItem button key={"アニメを探す"}>
+              <ListItemIcon><SearchIcon /></ListItemIcon>
+              <ListItemText primary={"アニメを探す"} />
             </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          {
-            /*
-            {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
+            <ListItem button key={"ユーザーを探す"}>
+              <ListItemIcon><SearchIcon /></ListItemIcon>
+              <ListItemText primary={"ユーザーを探す"} />
             </ListItem>
-          ))}
-             */
-          }
-          { props.value.isAuthenticated &&
-          <ListItem button key={"ユーザーページ"}>
-            <ListItemText primary={"ユーザーページ"} />
-          </ListItem>
-          }
-          {twitterLoginOrLogout}
-        </List>
-      </Drawer>
-      <main
-        className={clsx(classes.content, {
-          [classes.contentShift]: open,
-        })}
-      >
-        <div className={classes.drawerHeader} />
-        <Router>
+          </List>
+          <Divider />
+          <List>
+            { user &&
+            <ListItem button key={"ユーザーページ"} component={Link} to={"/users/"+user.id}>
+              <ListItemText primary={"ユーザーページ"} />
+            </ListItem>
+            }
+            {
+            (user)? LogoutButton : twitterLoginButton
+            }
+          </List>
+        </Drawer>
+        <main
+          className={clsx(classes.content, {
+            [classes.contentShift]: open,
+          })}
+        >
+          <div className={classes.drawerHeader} />
           <Route path="/" exact component={Home}/>
-          <Route path="/users" component={Users} />
-        </Router>
-      </main>
-    </div>
+          <Route path={"/users/:id(\\d+)"} component={UserPage}/>
+          <Route path={"/users/all"} component={Users}/>
+        </main>
+      </div>
+    </Router>
   );
 }

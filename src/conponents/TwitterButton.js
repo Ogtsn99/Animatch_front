@@ -10,7 +10,7 @@ if(process.env.NODE_ENV === "development"){
   API_ROOT = "https://animatch-nyan-api.herokuapp.com"
   CLIENT_ROOT = "https://animatch-nyan.herokuapp.com"
 }
-let setUser, setIsAuthenticated
+let setUser
 
 const onSuccess = (response) => {
   const token = response.headers.get('x-auth-token');
@@ -21,7 +21,7 @@ const onSuccess = (response) => {
     }
   }).then(response => {
     if (response.data.user) {
-      setIsAuthenticated(true)
+      setUser(response.data.user)
     }
   })
 };
@@ -32,8 +32,7 @@ const onFailed = (error) => {
 
 function TwitterButton(props){
   setUser = props.value.setUser
-  setIsAuthenticated = props.value.setIsAuthenticated
-  console.log("user:", props.value.user, props.value.isAuthenticated)
+  console.log("user:", props.value.user)
   return (
     <TwitterLogin loginUrl={API_ROOT+"/api/v1/auth/twitter"}
                   onFailure={onFailed} onSuccess={onSuccess}

@@ -13,39 +13,27 @@ if(process.env.NODE_ENV === "development"){
   CLIENT_ROOT = "https://animatch-nyan.herokuapp.com"
 }
 
-function authenticate(setIsAuthenticated, setUser) {
-  if (localStorage.getItem('x-auth-token')) {
-    axios.get(API_ROOT + '/api/v1/users/me', {
-      headers: {
-        'x-auth-token': localStorage.getItem('x-auth-token')
-      }
-    }).then(response => {
-      if (process.env.NODE_ENV === "development")
-        console.log(response)
-      if (response.data.user) {
-        setUser(response.data.user)
-        setIsAuthenticated(true)
-      }
-    })
-  }
-}
-
 function App(){
-  const [isAuthenticated, setIsAuthenticated] = React.useState(!!localStorage.getItem('x-auth-token'));
   const [user, setUser] = React.useState(null)
-  React.useEffect(()=>authenticate(setIsAuthenticated, setUser), [isAuthenticated])
+  React.useEffect(async ()=>{
+    if(localStorage.getItem('x-auth-token')){
+      const response = await axios.get(API_ROOT + '/api/v1/users/me', {
+        headers: {
+          'x-auth-token': localStorage.getItem('x-auth-token')
+        }
+      })
+      setUser(response.data.user)
+    }
+  }, [setUser])
   return (
     <div>
       <PersistentDrawer value={{
-        isAuthenticated: isAuthenticated,
-        setIsAuthenticated: setIsAuthenticated,
         user: user,
         setUser: setUser
       }}/>
       <Footer />
     </div>
   )
-
 }
 
 export default App;
