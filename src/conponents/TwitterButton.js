@@ -1,6 +1,6 @@
-import React from "react";
-import TwitterLogin from "react-twitter-auth";
-import axios from "axios";
+import React from "react"
+import TwitterLogin from "react-twitter-auth"
+import axios from "axios"
 // eslint-disable-next-line
 let API_ROOT, CLIENT_ROOT
 if(process.env.NODE_ENV === "development"){
@@ -13,8 +13,8 @@ if(process.env.NODE_ENV === "development"){
 let setUser
 
 const onSuccess = (response) => {
-  const token = response.headers.get('x-auth-token');
-  localStorage.setItem('x-auth-token', token);
+  const token = response.headers.get('x-auth-token')
+  localStorage.setItem('x-auth-token', token)
   axios.get(API_ROOT + '/api/v1/users/me', {
     headers: {
       'x-auth-token': token
@@ -24,11 +24,11 @@ const onSuccess = (response) => {
       setUser(response.data.user)
     }
   })
-};
+}
 
 const onFailed = (error) => {
-  alert(error);
-};
+  alert(error)
+}
 
 function TwitterButton(props){
   setUser = props.value.setUser
