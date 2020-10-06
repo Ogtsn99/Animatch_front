@@ -15,14 +15,13 @@ if(process.env.NODE_ENV === "development"){
 
 function App(){
   const [user, setUser] = React.useState(null)
-  React.useEffect(async ()=>{
+  React.useEffect(()=>{
     if(localStorage.getItem('x-auth-token')){
-      const response = await axios.get(API_ROOT + '/api/v1/users/me', {
+      axios.get(API_ROOT + '/api/v1/users/me', {
         headers: {
           'x-auth-token': localStorage.getItem('x-auth-token')
         }
-      })
-      setUser(response.data.user)
+      }).then(response => setUser(response.data.user))
     }
   }, [setUser])
   return (
