@@ -86,15 +86,29 @@ function UserPage(props){
             </Link></Typography>
             }
           </Box>
+        </ Box>
+        <Box my={3} textAlign="left">
+          <Typography variant="body1">基本情報</Typography>
+          <Box
+            boxShadow={3}
+            bgcolor="background.paper"
+            m={1}
+            p={1}
+            style={{ width: 'auto', height: 'auto' }}
+          >
+            <Typography variant="body1">プロフィール</Typography>
+            <Typography variant="body1">{userInfo.profile}</Typography>
+          </Box>
           {
             isYou && <FormDialog formTitle="編集"
-                                  API_ROOT={API_ROOT}
-                                  id={id}
-                                  name={userInfo.name}
-                                  twitter_id={userInfo.twitter_id_str}
-                                  age={userInfo.age}
-                                  gender={userInfo.gender}
-                                  setUserInfo={setUserInfo}
+                                 API_ROOT={API_ROOT}
+                                 id={id}
+                                 name={userInfo.name}
+                                 twitter_id={userInfo.twitter_id_str}
+                                 age={userInfo.age}
+                                 gender={userInfo.gender}
+                                 profile={userInfo.profile}
+                                 setUserInfo={setUserInfo}
             />
           }
         </ Box>

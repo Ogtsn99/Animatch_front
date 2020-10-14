@@ -26,6 +26,7 @@ function FormDialog(props){
   const [age, setAge] = React.useState(props.age || "")
   const [twitter_id, setTwitter_Id] = React.useState(props.twitter_id)
   const [gender, setGender] = React.useState(props.gender || "")
+  const [profile, setProfile] = React.useState(props.profile || "")
   const token = localStorage.getItem('x-auth-token')
 
   const handleClickOpen = () => {
@@ -68,7 +69,6 @@ function FormDialog(props){
               if(parseInt(e.target.value) <= 117)
               setAge(parseInt(e.target.value))
             }}
-            fullWidth
           />
           {/* Gender */}
           <TextField
@@ -93,6 +93,18 @@ function FormDialog(props){
             }}
             fullWidth
           />
+          <TextField
+            value={profile}
+            id="profile"
+            label="profile"
+            type="text"
+            multiline
+            rows={20}
+            onChange={(e) => {
+              if(e.target.value.length <= 520) setProfile((e.target.value))
+            }}
+            fullWidth
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
@@ -103,7 +115,7 @@ function FormDialog(props){
             {name: name},
             {
               headers: {
-                'x-auth-token': localStorage.getItem('x-auth-token')
+                'x-auth-token': token
               }
             }).catch((res)=>{console.log(res.error)})
 
@@ -111,7 +123,7 @@ function FormDialog(props){
             {age: age},
             {
               headers: {
-                'x-auth-token': localStorage.getItem('x-auth-token')
+                'x-auth-token': token
               }
             }).catch((res)=>{console.log(res.error)})
 
@@ -119,7 +131,7 @@ function FormDialog(props){
               {gender: gender},
               {
                 headers: {
-                  'x-auth-token': localStorage.getItem('x-auth-token')
+                  'x-auth-token': token
                 }
               }).catch((res)=>{console.log(res.error)})
 
@@ -127,13 +139,13 @@ function FormDialog(props){
               {twitterIdStr: twitter_id},
               {
                 headers: {
-                  'x-auth-token': localStorage.getItem('x-auth-token')
+                  'x-auth-token': token
                 }
               }).catch((res)=>{console.log(res.error)})
 
               axios.get(API_ROOT + '/api/v1/users/showInfo/' + id, {
                 headers: {
-                  'x-auth-token': localStorage.getItem('x-auth-token')
+                  'x-auth-token': token
                 }
               }).then(response =>{
                 if(response.data.user === null){
