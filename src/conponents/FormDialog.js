@@ -5,14 +5,28 @@ import DialogTitle from "@material-ui/core/DialogTitle"
 import DialogContent from "@material-ui/core/DialogContent"
 import TextField from "@material-ui/core/TextField"
 import DialogActions from "@material-ui/core/DialogActions"
+import axios from "axios";
+
+// eslint-disable-next-line
+let API_ROOT, CLIENT_ROOT
+if(process.env.NODE_ENV === "development"){
+  API_ROOT = "http://127.0.0.1:3000"
+  CLIENT_ROOT = "http://localhost:4000"
+}else {
+  API_ROOT = "https://animatch-nyan-api.herokuapp.com"
+  CLIENT_ROOT = "https://animatch-nyan.herokuapp.com"
+}
 
 function FormDialog(props){
-
+  const id = props.id
+  const setUserInfo = props.setUserInfo
+  const API_ROOT = props.API_ROOT
   const [open, setOpen] = React.useState(false);
   const [name, setName] = React.useState(props.name)
   const [age, setAge] = React.useState(props.age || "")
   const [twitter_id, setTwitter_Id] = React.useState(props.twitter_id)
   const [gender, setGender] = React.useState(props.gender || "")
+  const token = localStorage.getItem('x-auth-token')
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -84,13 +98,56 @@ function FormDialog(props){
           <Button onClick={handleClose} color="primary">
             キャンセル
           </Button>
-          <Button onClick={()=>{
-            console.log("Clicked! ")
-            console.log("name: ", name)
-            console.log("Age: ", age)
-            console.log("Gender: ", gender)
-            console.log("twitter_id: ", twitter_id)
-            handleClose()}
+          <Button onClick={async ()=>{
+            await axios.put(API_ROOT + '/api/v1/users/edit/name/' + id.toString(),
+            {name: name},
+            {
+              headers: {
+                'x-auth-token': localStorage.getItem('x-auth-token')
+              }
+            }).catch((res)=>{console.log(res.error)})
+
+            await axios.put(API_ROOT + '/api/v1/users/edit/age/' + id.toString(),
+            {age: age},
+            {
+              headers: {
+                'x-auth-token': localStorage.getItem('x-auth-token')
+              }
+            }).catch((res)=>{console.log(res.error)})
+
+            await axios.put(API_ROOT + '/api/v1/users/edit/gender/' + id.toString(),
+              {gender: gender},
+              {
+                headers: {
+                  'x-auth-token': localStorage.getItem('x-auth-token')
+                }
+              }).catch((res)=>{console.log(res.error)})
+
+            await axios.put(API_ROOT + '/api/v1/users/edit/twitter_id/' + id.toString(),
+              {twitterIdStr: twitter_id},
+              {
+                headers: {
+                  'x-auth-token': localStorage.getItem('x-auth-token')
+                }
+              }).catch((res)=>{console.log(res.error)})
+
+              axios.get(API_ROOT + '/api/v1/users/showInfo/' + id, {
+                headers: {
+                  'x-auth-token': localStorage.getItem('x-auth-token')
+                }
+              }).then(response =>{
+                if(response.data.user === null){
+                  setUserInfo("Not Found")
+                }else {
+                  let userInfo = response.data.user.user_info
+                  userInfo.name = response.data.user.name
+                  console.log(userInfo)
+                  setUserInfo(userInfo)
+                }
+              }).catch(()=>{setUserInfo("Not Found")})
+
+              handleClose()
+            }
           } color="primary">
             登録
           </Button>

@@ -66,9 +66,9 @@ function UserPage(props){
     )
   } else{
     return (
-      <Container maxWidth="sm">
+      <Container maxWidth="md">
         <Typography variant="subtitle1">ユーザーページ</Typography>
-        <Box my={3} textAlign="center">
+        <Box my={3} textAlign="left">
           <Typography variant="body1">基本情報</Typography>
           <Box
             boxShadow={3}
@@ -81,17 +81,22 @@ function UserPage(props){
             {userInfo.age && <Typography variant="body1">年齢: {userInfo.age}</Typography>}
             {userInfo.gender && <Typography variant="body1">性別: {userInfo.gender}</Typography>}
             {userInfo.twitter_id_str &&
-            <Link href={"https://twitter.com/Ogtsn99"+userInfo.twitter_id_str} target="_blank">
-              Twitter_id: {userInfo.twitter_id_str}
-            </Link>}
+            <Typography variant="body1">Twitter_id: <Link href={"https://twitter.com/"+userInfo.twitter_id_str} target="_blank">
+              {userInfo.twitter_id_str}
+            </Link></Typography>
+            }
           </Box>
-          {isYou && <Typography variant="body1">isYou!</Typography>}
-          <FormDialog formTitle="編集"
-                      name={userInfo.name}
-                      twitter_id={userInfo.twitter_id_str}
-                      age={userInfo.age}
-                      gender={userInfo.gender}
-          />
+          {
+            isYou && <FormDialog formTitle="編集"
+                                  API_ROOT={API_ROOT}
+                                  id={id}
+                                  name={userInfo.name}
+                                  twitter_id={userInfo.twitter_id_str}
+                                  age={userInfo.age}
+                                  gender={userInfo.gender}
+                                  setUserInfo={setUserInfo}
+            />
+          }
         </ Box>
       </Container>
     )
