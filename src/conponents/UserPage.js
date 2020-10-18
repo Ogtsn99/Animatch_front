@@ -47,7 +47,6 @@ function UserPage(props){
       }else {
         let userInfo = response.data.user.user_info
         userInfo.name = response.data.user.name
-        console.log(userInfo)
         setUserInfo(userInfo)
       }
     }).catch(()=>{setUserInfo("Not Found")})
@@ -88,7 +87,7 @@ function UserPage(props){
           </Box>
         </ Box>
         <Box my={3} textAlign="left">
-          <Typography variant="body1">基本情報</Typography>
+          <Typography variant="body1">プロフィール</Typography>
           <Box
             boxShadow={3}
             bgcolor="background.paper"
@@ -96,8 +95,7 @@ function UserPage(props){
             p={1}
             style={{ width: 'auto', height: 'auto' }}
           >
-            <Typography variant="body1">プロフィール</Typography>
-            <Typography variant="body1">{userInfo.profile}</Typography>
+            <Typography variant="body1" style={{whiteSpace: "pre-wrap", wordWrap: "break-word" }}>{userInfo.profile}</Typography>
           </Box>
           {
             isYou && <FormDialog formTitle="編集"

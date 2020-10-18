@@ -143,6 +143,14 @@ function FormDialog(props){
                 }
               }).catch((res)=>{console.log(res.error)})
 
+            await axios.put(API_ROOT + '/api/v1/users/edit/profile/' + id.toString(),
+              {profile: profile},
+              {
+                headers: {
+                  'x-auth-token': token
+                }
+              }).catch((res)=>{console.log(res.error)})
+
               axios.get(API_ROOT + '/api/v1/users/showInfo/' + id, {
                 headers: {
                   'x-auth-token': token
