@@ -5,7 +5,8 @@ import DialogTitle from "@material-ui/core/DialogTitle"
 import DialogContent from "@material-ui/core/DialogContent"
 import TextField from "@material-ui/core/TextField"
 import DialogActions from "@material-ui/core/DialogActions"
-import axios from "axios";
+import axios from "axios"
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 // eslint-disable-next-line
 let API_ROOT, CLIENT_ROOT
@@ -28,6 +29,7 @@ function FormDialog(props){
   const [gender, setGender] = React.useState(props.gender || "")
   const [profile, setProfile] = React.useState(props.profile || "")
   const token = localStorage.getItem('x-auth-token')
+  const [loading, setLoading] = React.useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -107,49 +109,54 @@ function FormDialog(props){
           />
         </DialogContent>
         <DialogActions>
+
           <Button onClick={handleClose} color="primary">
             キャンセル
           </Button>
-          <Button onClick={async ()=>{
-            await axios.put(API_ROOT + '/api/v1/users/edit/name/' + id.toString(),
-            {name: name},
-            {
-              headers: {
-                'x-auth-token': token
-              }
-            }).catch((res)=>{console.log(res.error)})
+          {loading?
+            <CircularProgress />
+            :
+            <Button onClick={async ()=>{
+              setLoading(true)
+              await axios.put(API_ROOT + '/api/v1/users/edit/name/' + id.toString(),
+                {name: name},
+                {
+                  headers: {
+                    'x-auth-token': token
+                  }
+                }).catch((res)=>{console.log(res.error)})
 
-            await axios.put(API_ROOT + '/api/v1/users/edit/age/' + id.toString(),
-            {age: age},
-            {
-              headers: {
-                'x-auth-token': token
-              }
-            }).catch((res)=>{console.log(res.error)})
+              await axios.put(API_ROOT + '/api/v1/users/edit/age/' + id.toString(),
+                {age: age},
+                {
+                  headers: {
+                    'x-auth-token': token
+                  }
+                }).catch((res)=>{console.log(res.error)})
 
-            await axios.put(API_ROOT + '/api/v1/users/edit/gender/' + id.toString(),
-              {gender: gender},
-              {
-                headers: {
-                  'x-auth-token': token
-                }
-              }).catch((res)=>{console.log(res.error)})
+              await axios.put(API_ROOT + '/api/v1/users/edit/gender/' + id.toString(),
+                {gender: gender},
+                {
+                  headers: {
+                    'x-auth-token': token
+                  }
+                }).catch((res)=>{console.log(res.error)})
 
-            await axios.put(API_ROOT + '/api/v1/users/edit/twitter_id/' + id.toString(),
-              {twitterIdStr: twitter_id},
-              {
-                headers: {
-                  'x-auth-token': token
-                }
-              }).catch((res)=>{console.log(res.error)})
+              await axios.put(API_ROOT + '/api/v1/users/edit/twitter_id/' + id.toString(),
+                {twitterIdStr: twitter_id},
+                {
+                  headers: {
+                    'x-auth-token': token
+                  }
+                }).catch((res)=>{console.log(res.error)})
 
-            await axios.put(API_ROOT + '/api/v1/users/edit/profile/' + id.toString(),
-              {profile: profile},
-              {
-                headers: {
-                  'x-auth-token': token
-                }
-              }).catch((res)=>{console.log(res.error)})
+              await axios.put(API_ROOT + '/api/v1/users/edit/profile/' + id.toString(),
+                {profile: profile},
+                {
+                  headers: {
+                    'x-auth-token': token
+                  }
+                }).catch((res)=>{console.log(res.error)})
 
               axios.get(API_ROOT + '/api/v1/users/showInfo/' + id, {
                 headers: {
@@ -165,12 +172,13 @@ function FormDialog(props){
                   setUserInfo(userInfo)
                 }
               }).catch(()=>{setUserInfo("Not Found")})
-
               handleClose()
+              setLoading(false)
             }
-          } color="primary">
-            登録
-          </Button>
+            } color="primary">
+              登録
+            </Button>
+          }
         </DialogActions>
       </Dialog>
     </div>
